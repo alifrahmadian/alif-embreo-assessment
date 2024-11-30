@@ -4,12 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 
-	config "github.com/alifrahmadian/alif-embreo-assessment/configs"
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
-func Connect(dbConfig *config.DBConfig) (*sql.DB, error) {
+type DBConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DBName   string
+}
+
+func Connect(dbConfig DBConfig) (*sql.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.DBName)
 
 	DB, err := sql.Open("postgres", dsn)
