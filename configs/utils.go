@@ -3,6 +3,7 @@ package configs
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/alifrahmadian/alif-embreo-assessment/internal/db"
 	"github.com/joho/godotenv"
@@ -12,9 +13,18 @@ func loadDBConfig() *db.DBConfig {
 	return &db.DBConfig{
 		Host:     os.Getenv("HOST"),
 		Port:     os.Getenv("PORT"),
-		User:     os.Getenv("USER"),
+		Username: os.Getenv("USERNAME"),
 		Password: os.Getenv("PASSWORD"),
 		DBName:   os.Getenv("DB_NAME"),
+	}
+}
+
+func loadAuthConfig() *AuthConfig {
+	ttl, _ := strconv.Atoi(os.Getenv("TTL"))
+
+	return &AuthConfig{
+		TTL:       ttl,
+		SecretKey: os.Getenv("SECRET_KEY"),
 	}
 }
 

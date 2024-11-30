@@ -2,6 +2,7 @@ package main
 
 import (
 	config "github.com/alifrahmadian/alif-embreo-assessment/configs"
+	"github.com/alifrahmadian/alif-embreo-assessment/internal/routes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,7 @@ func NewApp() *App {
 	}
 
 	router := gin.Default()
+	routes.SetupRoutes(router, cfg.Handlers)
 
 	return &App{
 		Router: router,

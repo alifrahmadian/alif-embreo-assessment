@@ -5,6 +5,9 @@ import (
 	"fmt"
 
 	"github.com/alifrahmadian/alif-embreo-assessment/internal/db"
+	"github.com/alifrahmadian/alif-embreo-assessment/internal/handlers"
+	"github.com/alifrahmadian/alif-embreo-assessment/internal/repositories"
+	"github.com/alifrahmadian/alif-embreo-assessment/internal/services"
 )
 
 type Config struct {
@@ -15,9 +18,12 @@ type Config struct {
 }
 
 type Handlers struct {
+	AuthHandler *handlers.AuthHandler
 }
 
 type AuthConfig struct {
+	TTL       int
+	SecretKey string
 }
 
 func LoadConfig() (*Config, error) {
@@ -28,16 +34,27 @@ func LoadConfig() (*Config, error) {
 
 	dbConfig := loadDBConfig()
 	env := loadEnv()
+	authConfig := loadAuthConfig()
 
 	db, err := db.Connect(*dbConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect database: %w", err)
 	}
-	defer db.Close()
-	fmt.Println("Database connected successfully")
+	// defer db.Close()
+	fmt.Println("Database connected successfully: ", db)
+
+	userRepo := repositories.NewUserRepository(db)
+
+	authService := services.NewAuthService(userRepo)
+
+	authHandler := handlers.NewAuthHandler(&authService)
 
 	return &Config{
-		DB:  db,
-		Env: env,
+		DB:   db,
+		Env:  env,
+		Auth: authConfig,
+		Handlers: &Handlers{
+			AuthHandler: authHandler,
+		},
 	}, nil
 }
