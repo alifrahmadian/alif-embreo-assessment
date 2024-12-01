@@ -14,7 +14,8 @@ type Config struct {
 }
 
 type Handlers struct {
-	AuthHandler *handlers.AuthHandler
+	AuthHandler  *handlers.AuthHandler
+	EventHandler *handlers.EventHandler
 }
 
 type AuthConfig struct {

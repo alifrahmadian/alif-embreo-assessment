@@ -10,10 +10,12 @@ import (
 func GenerateToken(user *models.User, secretKey string, ttl int) (string, error) {
 	jwtSecret := []byte(secretKey)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"email":    user.Email,
-		"role_id":  user.RoleID,
-		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
+		"username":   user.Username,
+		"email":      user.Email,
+		"role_id":    user.RoleID,
+		"company_id": user.CompanyID,
+		"vendor_id":  user.VendorID,
+		"exp":        time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
 
 	tokenString, err := token.SignedString(jwtSecret)

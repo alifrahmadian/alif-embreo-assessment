@@ -2,7 +2,7 @@ package models
 
 type Event struct {
 	ID              int64       `json:"id"`
-	ProposedDates   [3]int64    `json:"proposed_dates"`
+	ProposedDates   []int64     `json:"proposed_dates"`
 	ConfirmedDate   int64       `json:"confirmed_date"`
 	Location        string      `json:"location"`
 	RejectedRemarks string      `json:"rejected_remarks"`
