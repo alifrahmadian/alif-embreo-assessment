@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/alifrahmadian/alif-embreo-assessment/internal/models"
+	"github.com/alifrahmadian/alif-embreo-assessment/pkg/errors"
 )
 
 type UserRepository interface {
 	CreateUser(user *models.User) error
 	IsUsernameExist(username string) (bool, error)
 	IsEmailExist(email string) (bool, error)
-	// GetUserByUsername(username string) (*models.User, error)
+	GetUser(username string) (*models.User, error)
 }
 
 type userRepository struct {
@@ -77,4 +78,34 @@ func (r *userRepository) CreateUser(user *models.User) error {
 	}
 
 	return nil
+}
+
+func (r *userRepository) GetUser(username string) (*models.User, error) {
+	user := &models.User{}
+
+	query := `
+		SELECT id, username, email, password, role_id, company_id, vendor_id FROM users WHERE username = $1
+	`
+
+	err := r.DB.QueryRow(
+		query,
+		username,
+	).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.Password,
+		&user.RoleID,
+		&user.CompanyID,
+		&user.VendorID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrUserNotFound
+		}
+
+		return nil, err
+	}
+
+	return user, nil
 }

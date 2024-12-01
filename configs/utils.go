@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func loadDBConfig() *db.DBConfig {
+func LoadDBConfig() *db.DBConfig {
 	return &db.DBConfig{
 		Host:     os.Getenv("HOST"),
 		Port:     os.Getenv("PORT"),
@@ -19,7 +19,7 @@ func loadDBConfig() *db.DBConfig {
 	}
 }
 
-func loadAuthConfig() *AuthConfig {
+func LoadAuthConfig() *AuthConfig {
 	ttl, _ := strconv.Atoi(os.Getenv("TTL"))
 
 	return &AuthConfig{
@@ -28,11 +28,11 @@ func loadAuthConfig() *AuthConfig {
 	}
 }
 
-func loadEnv() string {
+func LoadEnv() string {
 	return os.Getenv("ENV")
 }
 
-func loadGoDotEnv() error {
+func LoadGoDotEnv() error {
 	err := godotenv.Load()
 	if err != nil {
 		return fmt.Errorf("error loading .env file: %w", err)
