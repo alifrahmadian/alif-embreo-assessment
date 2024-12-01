@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/alifrahmadian/alif-embreo-assessment/internal/constants"
@@ -80,4 +81,53 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 	}
 
 	responses.SuccessResponse(c, "Event created successfully!", resp)
+}
+
+func (h *EventHandler) GetEventByID(c *gin.Context) {
+	eventID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrInvalidEventID.Error())
+		return
+	}
+
+	event, err := h.EventService.GetEventByID(int64(eventID))
+	if err != nil {
+		if err == errors.ErrEventNotFound {
+			responses.ErrorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		responses.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	resp := &dtos.GetEventResponse{
+		ID:              event.ID,
+		ProposedDates:   event.ProposedDates,
+		ConfirmedDate:   event.ConfirmedDate,
+		Location:        event.Location,
+		RejectedRemarks: event.RejectedRemarks,
+		CreatedAt:       event.CreatedAt,
+		EventTypeID:     event.EventTypeID,
+		EventType: dtos.EventTypeGetEventResponse{
+			ID:   event.EventType.ID,
+			Name: event.EventType.Name,
+		},
+		CompanyID: event.CompanyID,
+		Company: dtos.CompanyGetEventResponse{
+			ID:   event.Company.ID,
+			Name: event.Company.Name,
+		},
+		VendorID: event.VendorID,
+		Vendor: dtos.VendorGetEventResponse{
+			ID:   event.Vendor.ID,
+			Name: event.Vendor.Name,
+		},
+		EventStatusID: event.EventStatusID,
+		EventStatus: dtos.EventStatusGetEventResponse{
+			ID:   event.EventStatus.ID,
+			Name: event.EventStatus.Name,
+		},
+	}
+
+	responses.SuccessResponse(c, "get event successful", resp)
 }

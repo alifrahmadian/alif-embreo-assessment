@@ -9,4 +9,6 @@ var (
 	ErrLocationRequired           = errors.New("location is required")
 	ErrCompanyRequired            = errors.New("company is required")
 	ErrVendorRequired             = errors.New("vendor is requirede")
+	ErrEventNotFound              = errors.New("event not found")
+	ErrInvalidEventID             = errors.New("invalid event id")
 )
