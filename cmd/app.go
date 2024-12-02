@@ -66,7 +66,7 @@ func NewApp() *App {
 	}
 
 	router := gin.Default()
-	routes.SetupRoutes(router, cfg.Handlers)
+	routes.SetupRoutes(cfg.Auth.SecretKey, router, cfg.Handlers)
 
 	return &App{
 		Router: router,

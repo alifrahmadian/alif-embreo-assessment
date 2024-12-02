@@ -28,6 +28,14 @@ func NewEventHandler(eventService *services.EventService) *EventHandler {
 func (h *EventHandler) CreateEvent(c *gin.Context) {
 	var req dtos.CreateEventRequest
 
+	roleID := c.GetInt64("role_id")
+	companyID := c.GetInt64("company_id")
+
+	if roleID == constants.RoleVendor {
+		responses.ErrorResponse(c, http.StatusForbidden, errors.ErrForbidden.Error())
+		return
+	}
+
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
@@ -52,7 +60,7 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 
 	event := &models.Event{
 		EventTypeID:   req.EventTypeID,
-		CompanyID:     req.CompanyID,
+		CompanyID:     companyID,
 		ProposedDates: req.ProposedDates,
 		Location:      req.Location,
 		EventStatusID: constants.StatusPending,
@@ -180,6 +188,12 @@ func (h *EventHandler) GetAllEvents(c *gin.Context) {
 func (h *EventHandler) ApproveEvent(c *gin.Context) {
 	var req dtos.ApproveEventRequest
 
+	roleID := c.GetInt64("role_id")
+	if roleID == constants.RoleHR {
+		responses.ErrorResponse(c, http.StatusForbidden, errors.ErrForbidden.Error())
+		return
+	}
+
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
@@ -223,6 +237,12 @@ func (h *EventHandler) ApproveEvent(c *gin.Context) {
 
 func (h *EventHandler) RejectEvent(c *gin.Context) {
 	var req dtos.RejectEventRequest
+
+	roleID := c.GetInt64("role_id")
+	if roleID == constants.RoleHR {
+		responses.ErrorResponse(c, http.StatusForbidden, errors.ErrForbidden.Error())
+		return
+	}
 
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
