@@ -12,6 +12,7 @@ type EventRepository interface {
 	CreateEvent(event *models.Event) (*models.Event, error)
 	GetEventByID(id int64) (*models.Event, error)
 	GetAllEvents() ([]*models.Event, error)
+	ApproveEvent(int64, *models.Event) error
 }
 
 type eventRepository struct {
@@ -193,4 +194,19 @@ func (r *eventRepository) GetAllEvents() ([]*models.Event, error) {
 	}
 
 	return events, nil
+}
+
+func (r *eventRepository) ApproveEvent(id int64, event *models.Event) error {
+	query := `
+		UPDATE events
+		SET event_status_id = $1, confirmed_date = $2
+		WHERE id = $3;
+	`
+	_, err := r.DB.Exec(query, event.EventStatusID, event.ConfirmedDate, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

@@ -55,3 +55,7 @@ type GetEventResponse struct {
 	EventStatusID   int64                       `json:"event_status_id"`
 	EventStatus     EventStatusGetEventResponse `json:"event_status"`
 }
+
+type ApproveEventRequest struct {
+	ConfirmedDate int64 `json:"confirmed_date" binding:"required"`
+}

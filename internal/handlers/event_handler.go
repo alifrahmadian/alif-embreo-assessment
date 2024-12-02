@@ -67,6 +67,7 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 		}
 
 		responses.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	resp := &dtos.CreateEventResponse{
@@ -174,4 +175,48 @@ func (h *EventHandler) GetAllEvents(c *gin.Context) {
 	}
 
 	responses.SuccessResponse(c, "get events successful", responseData)
+}
+
+func (h *EventHandler) ApproveEvent(c *gin.Context) {
+	var req dtos.ApproveEventRequest
+
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			switch err.Field() {
+			case "ConfirmedDate":
+				responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrConfirmedDateRequired.Error())
+				return
+			}
+		}
+	}
+
+	eventID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrInvalidEventID.Error())
+		return
+	}
+
+	event := &models.Event{
+		EventStatusID: constants.StatusApproved,
+		ConfirmedDate: &req.ConfirmedDate,
+	}
+
+	err = h.EventService.ApproveEvent(int64(eventID), event)
+	if err != nil {
+		if err == errors.ErrEventNotFound {
+			responses.ErrorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		if err == errors.ErrEventHasBeenApproved || err == errors.ErrEventHasBeenRejected {
+			responses.ErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		responses.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	responses.SuccessResponse(c, "Event approval successful!", nil)
 }

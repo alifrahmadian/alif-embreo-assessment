@@ -11,4 +11,7 @@ var (
 	ErrVendorRequired             = errors.New("vendor is requirede")
 	ErrEventNotFound              = errors.New("event not found")
 	ErrInvalidEventID             = errors.New("invalid event id")
+	ErrEventHasBeenRejected       = errors.New("event has been rejecrted")
+	ErrEventHasBeenApproved       = errors.New("event has been approved")
+	ErrConfirmedDateRequired      = errors.New("confirmed date is required")
 )

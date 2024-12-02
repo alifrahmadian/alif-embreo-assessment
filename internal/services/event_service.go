@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/alifrahmadian/alif-embreo-assessment/internal/constants"
 	"github.com/alifrahmadian/alif-embreo-assessment/internal/models"
 	r "github.com/alifrahmadian/alif-embreo-assessment/internal/repositories"
 	"github.com/alifrahmadian/alif-embreo-assessment/pkg/errors"
@@ -10,6 +11,7 @@ type EventService interface {
 	CreateEvent(event *models.Event) (*models.Event, error)
 	GetEventByID(id int64) (*models.Event, error)
 	GetAllEvents() ([]*models.Event, error)
+	ApproveEvent(id int64, event *models.Event) error
 }
 
 type eventService struct {
@@ -51,4 +53,26 @@ func (s *eventService) GetAllEvents() ([]*models.Event, error) {
 	}
 
 	return events, nil
+}
+
+func (s *eventService) ApproveEvent(id int64, event *models.Event) error {
+	currentEventData, err := s.EventRepo.GetEventByID(id)
+	if err != nil {
+		return errors.ErrEventNotFound
+	}
+
+	if currentEventData.EventStatusID == constants.StatusApproved && event.EventStatusID == constants.StatusRejected {
+		return errors.ErrEventHasBeenApproved
+	}
+
+	if currentEventData.EventStatusID == constants.StatusRejected && event.EventStatusID == constants.StatusApproved {
+		return errors.ErrEventHasBeenApproved
+	}
+
+	err = s.EventRepo.ApproveEvent(id, event)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

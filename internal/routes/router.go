@@ -10,5 +10,6 @@ func SetupRoutes(router *gin.Engine, handlers *configs.Handlers) {
 	router.POST("/login", handlers.AuthHandler.Login)
 	router.POST("/events/create", handlers.EventHandler.CreateEvent)
 	router.GET("/events/:id", handlers.EventHandler.GetEventByID)
+	router.PUT("/events/:id/approve", handlers.EventHandler.ApproveEvent)
 	router.GET("/events", handlers.EventHandler.GetAllEvents)
 }
