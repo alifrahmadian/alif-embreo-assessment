@@ -12,6 +12,7 @@ type EventService interface {
 	GetEventByID(id int64) (*models.Event, error)
 	GetAllEvents() ([]*models.Event, error)
 	ApproveEvent(id int64, event *models.Event) error
+	RejectEvent(id int64, event *models.Event) error
 }
 
 type eventService struct {
@@ -66,10 +67,32 @@ func (s *eventService) ApproveEvent(id int64, event *models.Event) error {
 	}
 
 	if currentEventData.EventStatusID == constants.StatusRejected && event.EventStatusID == constants.StatusApproved {
-		return errors.ErrEventHasBeenApproved
+		return errors.ErrEventHasBeenRejected
 	}
 
 	err = s.EventRepo.ApproveEvent(id, event)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *eventService) RejectEvent(id int64, event *models.Event) error {
+	currentEventData, err := s.EventRepo.GetEventByID(id)
+	if err != nil {
+		return errors.ErrEventNotFound
+	}
+
+	if currentEventData.EventStatusID == constants.StatusApproved && event.EventStatusID == constants.StatusRejected {
+		return errors.ErrEventHasBeenApproved
+	}
+
+	if currentEventData.EventStatusID == constants.StatusRejected && event.EventStatusID == constants.StatusApproved {
+		return errors.ErrEventHasBeenRejected
+	}
+
+	err = s.EventRepo.RejectEvent(id, event)
 	if err != nil {
 		return err
 	}

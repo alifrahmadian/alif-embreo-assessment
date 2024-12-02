@@ -59,3 +59,7 @@ type GetEventResponse struct {
 type ApproveEventRequest struct {
 	ConfirmedDate int64 `json:"confirmed_date" binding:"required"`
 }
+
+type RejectEventRequest struct {
+	RejectedRemarks string `json:"rejected_remarks" binding:"required"`
+}

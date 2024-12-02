@@ -14,4 +14,5 @@ var (
 	ErrEventHasBeenRejected       = errors.New("event has been rejecrted")
 	ErrEventHasBeenApproved       = errors.New("event has been approved")
 	ErrConfirmedDateRequired      = errors.New("confirmed date is required")
+	ErrRejectionRemarksRequired   = errors.New("rejection remarks required")
 )

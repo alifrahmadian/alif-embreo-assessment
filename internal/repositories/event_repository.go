@@ -13,6 +13,7 @@ type EventRepository interface {
 	GetEventByID(id int64) (*models.Event, error)
 	GetAllEvents() ([]*models.Event, error)
 	ApproveEvent(int64, *models.Event) error
+	RejectEvent(int64, *models.Event) error
 }
 
 type eventRepository struct {
@@ -209,4 +210,18 @@ func (r *eventRepository) ApproveEvent(id int64, event *models.Event) error {
 
 	return nil
 
+}
+
+func (r *eventRepository) RejectEvent(id int64, event *models.Event) error {
+	query := `
+		UPDATE events
+		SET event_status_id = $1, rejected_remarks = $2
+		WHERE id = $3;
+	`
+	_, err := r.DB.Exec(query, event.EventStatusID, event.RejectedRemarks, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
