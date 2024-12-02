@@ -11,7 +11,7 @@ type Event struct {
 	EventType       EventType   `json:"event_type"`
 	CompanyID       int64       `json:"company_id"`
 	Company         Company     `json:"company"`
-	VendorID        int64       `json:"vendor_id"`
+	VendorID        *int64      `json:"vendor_id"`
 	Vendor          Vendor      `json:"vendor"`
 	EventStatusID   int64       `json:"event_status_id"`
 	EventStatus     EventStatus `json:"event_status"`

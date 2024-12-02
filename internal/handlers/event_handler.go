@@ -43,9 +43,6 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 			case "EventTypeID":
 				responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrEventTypeRequired.Error())
 				return
-			case "VendorID":
-				responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrVendorRequired.Error())
-				return
 			case "CompanyID":
 				responses.ErrorResponse(c, http.StatusBadRequest, errors.ErrCompanyRequired.Error())
 			case "ProposedDates":
@@ -189,6 +186,7 @@ func (h *EventHandler) ApproveEvent(c *gin.Context) {
 	var req dtos.ApproveEventRequest
 
 	roleID := c.GetInt64("role_id")
+	vendorID := c.GetInt64("vendor_id")
 	if roleID == constants.RoleHR {
 		responses.ErrorResponse(c, http.StatusForbidden, errors.ErrForbidden.Error())
 		return
@@ -214,6 +212,7 @@ func (h *EventHandler) ApproveEvent(c *gin.Context) {
 	event := &models.Event{
 		EventStatusID: constants.StatusApproved,
 		ConfirmedDate: &req.ConfirmedDate,
+		VendorID:      &vendorID,
 	}
 
 	err = h.EventService.ApproveEvent(int64(eventID), event)

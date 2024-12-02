@@ -30,8 +30,8 @@ func (h *VendorHandler) GetVendors(c *gin.Context) {
 
 	for i, vendor := range vendors {
 		responseData[i] = &dtos.GetVendorResponse{
-			ID:   vendor.ID,
-			Name: vendor.Name,
+			ID:   *vendor.ID,
+			Name: *vendor.Name,
 		}
 	}
 

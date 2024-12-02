@@ -2,7 +2,6 @@ package dtos
 
 type CreateEventRequest struct {
 	EventTypeID   int64   `json:"event_type_id" binding:"required"`
-	VendorID      int64   `json:"vendor_id" binding:"required"`
 	ProposedDates []int64 `json:"proposed_dates" binding:"required"`
 	Location      string  `json:"location" binding:"required"`
 }
@@ -10,7 +9,7 @@ type CreateEventRequest struct {
 type CreateEventResponse struct {
 	ID            int64   `json:"id"`
 	CompanyID     int64   `json:"company_id"`
-	VendorID      int64   `json:"vendor_id"`
+	VendorID      *int64  `json:"vendor_id"`
 	EventStatusID int64   `json:"event_status_id"`
 	EventTypeID   int64   `json:"event_type_id"`
 	ProposedDates []int64 `json:"proposed_dates"`
@@ -29,8 +28,8 @@ type CompanyGetEventResponse struct {
 }
 
 type VendorGetEventResponse struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID   *int64  `json:"id"`
+	Name *string `json:"name"`
 }
 
 type EventStatusGetEventResponse struct {
@@ -49,7 +48,7 @@ type GetEventResponse struct {
 	EventType       EventTypeGetEventResponse   `json:"event_type"`
 	CompanyID       int64                       `json:"company_id"`
 	Company         CompanyGetEventResponse     `json:"company"`
-	VendorID        int64                       `json:"vendor_id"`
+	VendorID        *int64                      `json:"vendor_id"`
 	Vendor          VendorGetEventResponse      `json:"vendor"`
 	EventStatusID   int64                       `json:"event_status_id"`
 	EventStatus     EventStatusGetEventResponse `json:"event_status"`
