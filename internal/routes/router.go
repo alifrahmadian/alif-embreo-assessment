@@ -13,4 +13,5 @@ func SetupRoutes(router *gin.Engine, handlers *configs.Handlers) {
 	router.PUT("/events/:id/approve", handlers.EventHandler.ApproveEvent)
 	router.PUT("/events/:id/reject", handlers.EventHandler.RejectEvent)
 	router.GET("/events", handlers.EventHandler.GetAllEvents)
+	router.GET("/vendors", handlers.VendorHandler.GetVendors)
 }

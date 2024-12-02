@@ -37,20 +37,24 @@ func LoadConfig() (*configs.Config, error) {
 
 	userRepo := repositories.NewUserRepository(db)
 	eventRepo := repositories.NewEventRepository(db)
+	vendorRepo := repositories.NewVendorRepository(db)
 
 	authService := services.NewAuthService(userRepo)
 	eventService := services.NewEventService(eventRepo)
+	vendorService := services.NewVendorService(vendorRepo)
 
 	authHandler := handlers.NewAuthHandler(&authService, authConfig.SecretKey, authConfig.TTL)
 	eventHandler := handlers.NewEventHandler(&eventService)
+	vendorHandler := handlers.NewVendorHandler(&vendorService)
 
 	return &configs.Config{
 		DB:   db,
 		Env:  env,
 		Auth: authConfig,
 		Handlers: &configs.Handlers{
-			AuthHandler:  authHandler,
-			EventHandler: eventHandler,
+			AuthHandler:   authHandler,
+			EventHandler:  eventHandler,
+			VendorHandler: vendorHandler,
 		},
 	}, nil
 }
