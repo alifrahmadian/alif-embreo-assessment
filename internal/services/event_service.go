@@ -9,6 +9,7 @@ import (
 type EventService interface {
 	CreateEvent(event *models.Event) (*models.Event, error)
 	GetEventByID(id int64) (*models.Event, error)
+	GetAllEvents() ([]*models.Event, error)
 }
 
 type eventService struct {
@@ -41,4 +42,13 @@ func (s *eventService) GetEventByID(id int64) (*models.Event, error) {
 	}
 
 	return event, nil
+}
+
+func (s *eventService) GetAllEvents() ([]*models.Event, error) {
+	events, err := s.EventRepo.GetAllEvents()
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }

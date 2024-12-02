@@ -98,6 +98,7 @@ func (h *EventHandler) GetEventByID(c *gin.Context) {
 		}
 
 		responses.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	resp := &dtos.GetEventResponse{
@@ -130,4 +131,47 @@ func (h *EventHandler) GetEventByID(c *gin.Context) {
 	}
 
 	responses.SuccessResponse(c, "get event successful", resp)
+}
+
+func (h *EventHandler) GetAllEvents(c *gin.Context) {
+	events, err := h.EventService.GetAllEvents()
+	if err != nil {
+		responses.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	responseData := make([]*dtos.GetEventResponse, len(events))
+
+	for i, event := range events {
+		responseData[i] = &dtos.GetEventResponse{
+			ID:              event.ID,
+			ProposedDates:   event.ProposedDates,
+			ConfirmedDate:   event.ConfirmedDate,
+			Location:        event.Location,
+			RejectedRemarks: event.RejectedRemarks,
+			CreatedAt:       event.CreatedAt,
+			EventTypeID:     event.EventTypeID,
+			EventType: dtos.EventTypeGetEventResponse{
+				ID:   event.EventType.ID,
+				Name: event.EventType.Name,
+			},
+			CompanyID: event.CompanyID,
+			Company: dtos.CompanyGetEventResponse{
+				ID:   event.Company.ID,
+				Name: event.Company.Name,
+			},
+			VendorID: event.VendorID,
+			Vendor: dtos.VendorGetEventResponse{
+				ID:   event.Vendor.ID,
+				Name: event.Vendor.Name,
+			},
+			EventStatusID: event.EventStatusID,
+			EventStatus: dtos.EventStatusGetEventResponse{
+				ID:   event.EventStatus.ID,
+				Name: event.EventStatus.Name,
+			},
+		}
+	}
+
+	responses.SuccessResponse(c, "get events successful", responseData)
 }

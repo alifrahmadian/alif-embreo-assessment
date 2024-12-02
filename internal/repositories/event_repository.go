@@ -11,6 +11,7 @@ import (
 type EventRepository interface {
 	CreateEvent(event *models.Event) (*models.Event, error)
 	GetEventByID(id int64) (*models.Event, error)
+	GetAllEvents() ([]*models.Event, error)
 }
 
 type eventRepository struct {
@@ -115,4 +116,81 @@ func (r *eventRepository) GetEventByID(id int64) (*models.Event, error) {
 	}
 
 	return event, nil
+}
+
+func (r *eventRepository) GetAllEvents() ([]*models.Event, error) {
+	query := `
+		SELECT
+			events.id,
+			event_type_id,
+			event_types.id,
+			event_types.name,
+			company_id,
+			companies.id,
+			companies.name,
+			vendor_id,
+			vendors.id,
+			vendors.name,
+			event_status_id,
+			event_status.id,
+			event_status.name,
+			proposed_dates,
+			confirmed_date,
+			location,
+			rejected_remarks,
+			created_at
+		FROM
+			events
+		LEFT JOIN
+			event_types ON event_type_id = event_types.id
+		LEFT JOIN
+			companies ON company_id = companies.id
+		LEFT JOIN
+			vendors on vendor_id = vendors.id
+		LEFT JOIN
+			event_status on event_status_id = event_status.id;
+	`
+
+	rows, err := r.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var events []*models.Event
+
+	for rows.Next() {
+		event := &models.Event{}
+		err := rows.Scan(
+			&event.ID,
+			&event.EventTypeID,
+			&event.EventType.ID,
+			&event.EventType.Name,
+			&event.CompanyID,
+			&event.Company.ID,
+			&event.Company.Name,
+			&event.VendorID,
+			&event.Vendor.ID,
+			&event.Vendor.Name,
+			&event.EventStatusID,
+			&event.EventStatus.ID,
+			&event.EventStatus.Name,
+			pq.Array(&event.ProposedDates),
+			&event.ConfirmedDate,
+			&event.Location,
+			&event.RejectedRemarks,
+			&event.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
